@@ -145,7 +145,7 @@ def main():
 
     def nowTime():
         now = datetime.now()
-        return "%s:%s:%s" % (now.hour, now.minute, now.second)
+        return "%s:%s %s:%s:%s" % (now.month, now.day, now.hour, now.minute, now.second)
 
     def sendReminders(day1Messages):
         for sender, message in day1Messages.items():
