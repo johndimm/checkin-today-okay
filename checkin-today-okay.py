@@ -185,7 +185,7 @@ Subject: %s
 # Read email, send reminders, send alerts.
 #
     try:
-        print ("starting ", date.today())
+        print ("\n========= ", date.today())
         mail = login()
         (day1, day2, filterDef) = getFilter()
         messages = getMessages(filterDef)
