@@ -18,7 +18,6 @@ def main():
     FROM_EMAIL    = "checkintodayokay@gmail.com"
     FROM_PWD      =  os.environ.get('password')
 
-    print ("FROM_PWD:", FROM_PWD)
     dateFormat = "%d-%b-%Y"
 
     def getFilter():
@@ -70,7 +69,7 @@ def main():
        # contents = ''.join(parts)
 
         # Remove email quoting.
-        print ("contents before =====\n%s\n=========== " % contents)
+        #print ("contents before =====\n%s\n=========== " % contents)
 
         #
         # Extract the quoted email in this email.
@@ -81,12 +80,12 @@ def main():
             a = []
             for line in quotedLines:
                 cleaned = re.sub(r" ?^>? {0,2}", '', line, re.MULTILINE)
-                print ("cleaned:", cleaned)
+                #print ("cleaned:", cleaned)
                 a.append(cleaned)
             contents = "\n".join(a)
             contents = contents.strip()
 
-        print ("contents after =====\n%s\n=========== " % contents)
+        #print ("contents after =====\n%s\n=========== " % contents)
 
         return contents
 
@@ -99,7 +98,7 @@ def main():
 
         mail_ids = data[0]
         id_list = mail_ids.split()   
-        print ('ids:', id_list)
+        #print ('ids:', id_list)
 
         ask = '(RFC822)'
         for i in id_list:
@@ -128,6 +127,10 @@ def main():
                 day1Messages[efrom] = m['contents']
             if m['date'] == day2:
                 day2Messages[efrom] = ''
+        print ("day1 count: %s, day2 count: %s" % (
+            len(day1Messages), 
+            len(day2Messages)
+        ))        
         return (day1Messages, day2Messages)        
 
     def findExceptions(day1Messages, day2Messages):        
@@ -164,7 +167,7 @@ def main():
         sendMessage(receiver, contents, 'Check-in Today NOT Okay! %s (%s)' % (sender, nowTime()))
 
     def sendMessage(receiver, contents, subject):
-        print ("sending message: %s, %s %s" % (receiver, subject, contents))
+        print ("sending message to: %s, subject: %s" % (receiver, subject))
 
         PORT = 465  # For SSL
         SMTP_SERVER = "smtp.gmail.com"
@@ -175,8 +178,6 @@ Subject: %s
 %s
 """ % (SENDER_EMAIL, subject, contents)
 
-        print ("receiver: %s, message:\n=====\n %s \n=======\n" % (receiver, message))
-
         server = smtplib.SMTP_SSL(SMTP_SERVER, PORT)
         server.login(FROM_EMAIL, FROM_PWD)
         server.sendmail(FROM_EMAIL, receiver, message)    
@@ -184,6 +185,7 @@ Subject: %s
 # Read email, send reminders, send alerts.
 #
     try:
+        print ("starting ", date.today())
         mail = login()
         (day1, day2, filterDef) = getFilter()
         messages = getMessages(filterDef)
@@ -194,9 +196,11 @@ Subject: %s
             action = sys.argv[1]
 
         if action == 'reminder':
+            print ("checking for reminders")
             sendReminders(day1Messages)
 
         elif action == 'alert':
+            print ("checking for alerts")
             alerts = findExceptions(day1Messages, day2Messages)    
             for alert in alerts:
                 sendAlert(alert)
