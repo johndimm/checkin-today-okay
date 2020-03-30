@@ -1,2 +1,2 @@
 source .env
-python3 checkin-today-okay.py reminder >> reminder.log
+python3 checkin-today-okay.py reminder >> checkin.log

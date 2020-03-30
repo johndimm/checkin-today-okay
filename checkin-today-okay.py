@@ -127,7 +127,7 @@ def main():
                 day1Messages[efrom] = m['contents']
             if m['date'] == day2:
                 day2Messages[efrom] = ''
-        print ("day1 count: %s, day2 count: %s" % (
+        print ("day1: %s, day2: %s" % (
             len(day1Messages), 
             len(day2Messages)
         ))        
@@ -185,7 +185,7 @@ Subject: %s
 # Read email, send reminders, send alerts.
 #
     try:
-        print ("\n=========\n", date.today())
+        print ("\n=========\n%s" % datetime.now())
         mail = login()
         (day1, day2, filterDef) = getFilter()
         messages = getMessages(filterDef)
