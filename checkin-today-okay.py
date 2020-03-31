@@ -163,7 +163,7 @@ def main():
         sender = alert['from']
         receiver = ''
 
-        regex = re.compile(r"to:(.*)", re.MULTILINE)
+        regex = re.compile(r"send alert to:(.*)", re.MULTILINE)
         matches = regex.search(contents)
         if matches:
             receiver = matches.group(1).strip()
