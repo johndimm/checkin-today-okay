@@ -11,13 +11,13 @@ use one of your own email addresses.
 ```
 to: caregiver@gmail.com
 
-Hi caregiver, if you are receiving this message it could mean that I need help.  
+Dear Caregiver, if you are receiving this message it could mean that I need help.  
 
 Could you please check with me?  Thanks, I would really appreciate it.
 
 Your friend,
 
-  concerned@gmail.com
+  Concerned About Being Alone All The Time
 ```
 
 ## Check-in
