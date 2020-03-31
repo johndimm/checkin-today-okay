@@ -1,5 +1,7 @@
 # User Manual for Check-in Today Okay!
 
+This is a free daily check-in program.  You check in every day, and if you can't, we alert your designated caregiver.
+
 ## Signup
 
 Send an email like the one below to checkin-today-okay@gmail.com
