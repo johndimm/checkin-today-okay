@@ -4,7 +4,7 @@ This is a free daily check-in program.  You check in every day, and if you can't
 
 ## Sign up
 
-Send an email like the one below to checkin-today-okay@gmail.com
+Send an email like the one below to checkintodayokay@gmail.com
 
 Your email tells us us what to do in case you do not check in 
 tomorrow.   We will send a copy of your email to the address you specify following "send alert to:". 
@@ -32,7 +32,7 @@ If you do not send us an email by 9 PM, we send the alert email.
 # What is it?
 
 It is a dedicated gmail account and a python script running on a cron.  The code reads the last two days of 
-email sent to checkin-today-okay@gmail.com.  If you sent an email yesterday, but not the today, we follow the 
+email sent to checkintodayokay@gmail.com.  If you sent an email yesterday, but not the today, we follow the 
 instructions in yesterday's email.  You prevent the alert by sending the same message, with instructions, every day.
 
 # What is it not?
@@ -67,6 +67,6 @@ In step 3, you can also check in by sending the same email you sent today.  But 
 
 * you live alone and coronavirus
 
-* you have incriminating evidence against the mob boss whose henchmen are getting closer and closer.  You put the evidence into an email to checkin-today-okay, with the attorney general as caregiver, then send a message to the mob boss explaining all this.  He tells the henchmen to be gentle with you.
+* you have incriminating evidence against the mob boss whose henchmen are getting closer and closer.  You put the evidence into an email to checkintodayokay, with the attorney general as caregiver, then send a message to the mob boss explaining all this.  He tells the henchmen to be gentle with you.
 
 
