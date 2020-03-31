@@ -24,7 +24,7 @@ def main():
         #
         #  day1 is yesterday, day 2 is today 
         #
-        today = date.today() + timedelta(days=1)
+        today = date.today() + timedelta(days=0)
         day1 = today - timedelta(days=1)
         day2 = today - timedelta(days=0)
 
