@@ -36,6 +36,10 @@ It is a dedicated gmail account and a python script running on a cron.  The code
 email sent to checkin-today-okay@gmail.com.  If you sent an email yesterday, but not the today, we follow the 
 instructions in yesterday's email.  You prevent the alert by sending the same message, with instructions, every day.
 
+# What is it not?
+
+It's not a web app or a mobile app.  There is no User Interface.  There is no database.  The memory is the inbox of the email account, and only the last two days of that.
+
 # Three-day Demo in 6 Easy Steps:
 
 1.  send the first email to sign up.  You get a welcome message, sent by the gmail Vacation Responder.
@@ -52,9 +56,9 @@ instructions in yesterday's email.  You prevent the alert by sending the same me
 
 If you see the alert email come in, it's working!
 
-At this point, we assume you are dead and you are "removed" from the system.  It has only a 2-day memory and you are about to drop off.  It will not send any more reminders or alerts after this first one.  
+At this point you are no longer in the system.  It has only a 2-day memory and you just dropped off.  It will not send any more reminders or alerts after this first one.  
 
-To get back in to the system, you can either hit reply to the reminder email, or send the first message again but this time with the real message and the real address you want to send the alert.
+To get back in to the system, you can either hit reply to the reminder email, or send the first message again but this time with the real message and the real address of your caregiver, the person you want to receive the alert.
 
 
 In step 3, you can also check in by sending the same email you sent today.  But that requires cut and paste.  Hitting reply is easier.
