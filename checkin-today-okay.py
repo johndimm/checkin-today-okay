@@ -24,7 +24,7 @@ def main():
         #
         #  day1 is yesterday, day 2 is today 
         #
-        today = date.today() + timedelta(days=0)
+        today = date.today() + timedelta(days=1)
         day1 = today - timedelta(days=1)
         day2 = today - timedelta(days=0)
 
@@ -39,40 +39,44 @@ def main():
         mail.select('inbox')
         return mail
 
-    def clean(msg):
-        #regex = "<[^>]*>"
-        #s1 = re.sub(regex, "", html)
+    def clean(msg, mime):
         ctype = msg.get_content_type()
+        #print('type:' + ctype)
         pay = msg.get_payload()
-        if ctype == 'text/plain':
+
+        if mime == 'plain' and ctype == 'text/plain':
             return pay
 
-        s1 = html2text.html2text(pay)
-        s2 = re.sub(" *= *", " ", s1)
-        s3 = re.sub("\n\n", "\n", s2)
-        #ßre.sub("&nbsp;", " ", s2)
-        return s3
+        if mime == 'html' and ctype == 'text/html':
+            s1 = html2text.html2text(pay)
+            s2 = re.sub(" *= *", " ", s1)
+            s3 = re.sub("\n\n", "\n", s2)
+            return s3
+
+        return ''    
 
     def getEmailContents(msg):
-        contents = ''
+        plain = ''
+        html = ''
         if msg.is_multipart():
            for payload in msg.get_payload():
-           # if payload.is_multipart(): ...
-               contents += clean(payload)
+               plain += clean(payload, 'plain')
+               html += clean(payload, 'html')
+
         else:
-            contents += clean(msg)
+            plain += clean(msg, 'plain')
+            html += clean(msg, 'html')
 
-       # parts = []
-       # for part in msg.walk():
-            #if part.get_content_type() == 'text/plain':
-       #         parts.append( part.get_payload() )
-       # contents = ''.join(parts)
+        contents = ''
+        if len(plain) == 0:
+            contents = html
+        else:
+            contents = plain    
 
-        # Remove email quoting.
-        #print ("contents before =====\n%s\n=========== " % contents)
+        print ("contents before =====\n%s\n=========== " % contents)
 
         #
-        # Extract the quoted email in this email.
+        # Extract the quoted email from this email.
         # Contents is the whole enail if it's not a reply.
         #
         quotedLines = re.findall(r"^>.*", contents, re.MULTILINE)
@@ -85,7 +89,7 @@ def main():
             contents = "\n".join(a)
             contents = contents.strip()
 
-        #print ("contents after =====\n%s\n=========== " % contents)
+        print ("contents after ------\n%s\n------- " % contents)
 
         return contents
 
