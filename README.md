@@ -31,13 +31,13 @@ If you do not send us an email by 9 PM, we send the alert email.
 
 # What is it?
 
-It is a dedicated gmail account and a transitory python script running on a cron.  The code reads the last two days of 
+It is a dedicated gmail account and a python script running on a cron.  The code reads the last two days of 
 email sent to checkin-today-okay@gmail.com.  If you sent an email yesterday, but not the today, we follow the 
 instructions in yesterday's email.  You prevent the alert by sending the same message, with instructions, every day.
 
 # What is it not?
 
-It's not a web app or a mobile app.  There is no front end. There is no User Interface.  There is no database.  The memory is the inbox of the email account, and only the last two days of that.  
+It's not a web app or a mobile app.  There is no front end. There is no User Interface.  There is no database.  The memory is the inbox of the email account, and only the last two days of that.  There are no accounts.
 
 # Three-day Demo in 6 Easy Steps:
 
