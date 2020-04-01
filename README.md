@@ -7,7 +7,7 @@ This is a free daily check-in program.  You check in every day, and if you can't
 Send an email like the one below to checkintodayokay@gmail.com
 
 Your email tells us us what to do in case you do not check in 
-tomorrow.   We will send a copy of your email to the address you specify following "send alert to:". 
+tomorrow.   We will send a copy of it to the address you specify following "send alert to:". 
 
 ```
 send alert to: caregiver@gmail.com
