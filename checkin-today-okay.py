@@ -45,12 +45,13 @@ def main():
         pay = msg.get_payload()
 
         if mime == 'plain' and ctype == 'text/plain':
-            return pay
+            return re.sub("=C2=A0", " ", pay)
 
         if mime == 'html' and ctype == 'text/html':
             s1 = html2text.html2text(pay)
             s2 = re.sub(" *= *", " ", s1)
             s3 = re.sub("\n\n", "\n", s2)
+            #s4 = re.sub("=C2=A0", " ", s3)
             return s3
 
         return ''    
