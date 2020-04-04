@@ -2,7 +2,7 @@ import smtplib
 import time
 import imaplib
 import email
-from datetime import timedelta, date, datetime, time
+from datetime import timedelta, date, datetime, time, tzinfo
 from dateutil.parser import parse
 import smtplib, ssl
 import re
@@ -10,7 +10,10 @@ import sys
 import html2text
 import os
 
-import io
+from pytz import timezone
+import tzlocal
+
+#import io
 
 def main():
 
@@ -29,6 +32,7 @@ def main():
         day2 = today - timedelta(days=0)
 
         d1 = day1.strftime(dateFormat)
+        print ("d1:%s, day1:%s, day2:%s" % (d1, day1 ,day2))
         return (day1, day2, '(SINCE "%s")' % d1)
 
     def login():
@@ -74,7 +78,7 @@ def main():
         else:
             contents = plain    
 
-        print ("contents before =====\n%s\n=========== " % contents)
+        #print ("contents before =====\n%s\n=========== " % contents)
 
         #
         # Extract the quoted email from this email.
@@ -90,7 +94,7 @@ def main():
             contents = "\n".join(a)
             contents = contents.strip()
 
-        print ("contents after ------\n%s\n------- " % contents)
+        #print ("contents after ------\n%s\n------- " % contents)
 
         return contents
 
@@ -112,12 +116,18 @@ def main():
             rawEmail = data2[0][1]
             #msg = email.message_from_string(rawEmail)    # python 2.7
             msg = email.message_from_bytes(rawEmail)      # python 3
+            #print ("getMessages: \n=====%s======\n", msg.keys())
 
             efrom = msg['From']
-            edate = parse(msg['date']).date()
+            _date = msg['date']
+
+            utc_time = parse(_date)
+            edate = utc_time.astimezone(tzlocal.get_localzone()).date()
+
             econtents = getEmailContents(msg) 
 
             message = {'from': efrom, 'date': edate, 'contents': econtents}
+            #print ("message:", message)
             messages.append(message)         
 
         return messages
@@ -126,6 +136,7 @@ def main():
     def splitMessages(messages, day1, day2):
         day1Messages = dict()
         day2Messages = dict()
+
         for m in messages:
             efrom = m['from']
             if m['date'] == day1:
