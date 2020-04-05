@@ -27,7 +27,7 @@ def main():
         #
         #  day1 is yesterday, day 2 is today 
         #
-        today = date.today() + timedelta(days=0)
+        today = date.today() + timedelta(days=1)
         day1 = today - timedelta(days=1)
         day2 = today - timedelta(days=0)
 
@@ -48,17 +48,20 @@ def main():
         #print('type:' + ctype)
         pay = msg.get_payload()
 
+        m = ''
         if mime == 'plain' and ctype == 'text/plain':
-            return re.sub("=C2=A0", " \n", pay)
+            m = re.sub("=C2=A0", " \n", pay)
 
         if mime == 'html' and ctype == 'text/html':
-            s1 = html2text.html2text(pay)
-            s2 = re.sub(" *= *", " ", s1)
-            s3 = re.sub("\n\n", "\n", s2)
-            #s4 = re.sub("=C2=A0", " ", s3)
-            return s3
+            m = html2text.html2text(pay)
 
-        return ''    
+        m = re.sub("On .* wrote:", "", m, re.MULTILINE | re.DOTALL)
+        m = re.sub("\s*send alert to:", "send alert to:", m, re.MULTILINE | re.DOTALL)
+
+        m = re.sub(" *= *", " ", m)
+        m = re.sub("\n\n", "\n", m)
+        
+        return m
 
     def getEmailContents(msg):
         plain = ''
@@ -168,7 +171,7 @@ def main():
 
     def sendReminders(day1Messages):
         for sender, message in day1Messages.items():
-            sendMessage(sender, message, 'Check-in Today Okay? by 9 pm (%s)' % nowTime())
+            sendMessage(sender, message, 'Check-in Today Okay? Reply by 9:00 pm (%s)' % nowTime())
 
     def sendAlert(alert):
         contents = alert['contents']
