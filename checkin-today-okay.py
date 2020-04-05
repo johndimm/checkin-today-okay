@@ -49,7 +49,7 @@ def main():
         pay = msg.get_payload()
 
         if mime == 'plain' and ctype == 'text/plain':
-            return re.sub("=C2=A0", " ", pay)
+            return re.sub("=C2=A0", " \n", pay)
 
         if mime == 'html' and ctype == 'text/html':
             s1 = html2text.html2text(pay)
@@ -175,7 +175,7 @@ def main():
         sender = alert['from']
         receiver = ''
 
-        regex = re.compile(r"send alert to:(.*)", re.MULTILINE)
+        regex = re.compile(r"send alert to:\s*([^\s]*)", re.MULTILINE | re.DOTALL)
         matches = regex.search(contents)
         if matches:
             receiver = matches.group(1).strip()
