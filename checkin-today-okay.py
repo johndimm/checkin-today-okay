@@ -23,6 +23,9 @@ def main():
 
     dateFormat = "%d-%b-%Y"
 
+    def local_date(utc_time):
+            return utc_time.astimezone(tzlocal.get_localzone()).date()
+
     def getFilter():
         #
         #  day1 is yesterday, day 2 is today 
@@ -46,21 +49,29 @@ def main():
     def clean(msg, mime):
         ctype = msg.get_content_type()
         #print('type:' + ctype)
-        pay = msg.get_payload()
+        p = msg.get_payload(decode=True)
+        pay = p.decode()
 
         m = ''
         if mime == 'plain' and ctype == 'text/plain':
-            m = re.sub("=C2=A0", " \n", pay)
+           m = pay
 
         if mime == 'html' and ctype == 'text/html':
             m = html2text.html2text(pay)
 
-        m = re.sub("On .* wrote:", "", m, re.MULTILINE | re.DOTALL)
+        print ("\nbefore:\n ", m)    
+
+        m = re.sub("On .*? wrote:", "", m, re.MULTILINE | re.DOTALL)
         m = re.sub("\s*send alert to:", "send alert to:", m, re.MULTILINE | re.DOTALL)
 
-        m = re.sub(" *= *", " ", m)
-        m = re.sub("\n\n", "\n", m)
+        #m = re.sub(" *= *", " ", m)
+        #m = re.sub("\n\n", "\n", m)
+       
+       # m = re.sub("=C2=A0", " \n", m)
+       # m = re.sub("=20", " ", m)
         
+        print ("\nafter:\n ", m)
+
         return m
 
     def getEmailContents(msg):
@@ -125,7 +136,7 @@ def main():
             _date = msg['date']
 
             utc_time = parse(_date)
-            edate = utc_time.astimezone(tzlocal.get_localzone()).date()
+            edate = local_date(utc_time)
 
             econtents = getEmailContents(msg) 
 
@@ -199,7 +210,7 @@ Subject: %s
 
         server = smtplib.SMTP_SSL(SMTP_SERVER, PORT)
         server.login(FROM_EMAIL, FROM_PWD)
-        server.sendmail(FROM_EMAIL, receiver, message)    
+        server.sendmail(FROM_EMAIL, receiver, message.encode("utf8"))    
 #
 # Read email, send reminders, send alerts.
 #
