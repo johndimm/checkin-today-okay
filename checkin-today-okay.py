@@ -59,7 +59,7 @@ def main():
         if mime == 'html' and ctype == 'text/html':
             m = html2text.html2text(pay)
 
-        print ("\nbefore:\n ", m)    
+         #print ("\nbefore:\n ", m)    
 
         m = re.sub("On .*? wrote:", "", m, re.MULTILINE | re.DOTALL)
         m = re.sub("\s*send alert to:", "send alert to:", m, re.MULTILINE | re.DOTALL)
@@ -70,7 +70,7 @@ def main():
        # m = re.sub("=C2=A0", " \n", m)
        # m = re.sub("=20", " ", m)
         
-        print ("\nafter:\n ", m)
+        # print ("\nafter:\n ", m)
 
         return m
 
@@ -182,7 +182,7 @@ def main():
 
     def sendReminders(day1Messages):
         for sender, message in day1Messages.items():
-            sendMessage(sender, message, 'Check-in Today Okay? Reply by 9:00 pm (%s)' % nowTime())
+            sendMessage(sender, message, 'Reminder to Check-in Today Okay (%s)' % nowTime())
 
     def sendAlert(alert):
         contents = alert['contents']
@@ -194,7 +194,7 @@ def main():
         if matches:
             receiver = matches.group(1).strip()
 
-        sendMessage(receiver, contents, 'Check-in Today NOT Okay! %s (%s)' % (sender, nowTime()))
+        sendMessage(receiver, contents, 'ALERT! from Check-in Today Okay about %s (%s)' % (sender, nowTime()))
 
     def sendMessage(receiver, contents, subject):
         print ("sending message to: %s, subject: %s" % (receiver, subject))
