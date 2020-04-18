@@ -23,6 +23,8 @@ def main():
 
     dateFormat = "%d-%b-%Y"
 
+    SEND_ALERT_TO = 'send alert to:'
+
     def local_date(utc_time):
             return utc_time.astimezone(tzlocal.get_localzone()).date()
 
@@ -30,7 +32,7 @@ def main():
         #
         #  day1 is yesterday, day 2 is today 
         #
-        today = date.today() + timedelta(days=0)
+        today = date.today() + timedelta(days=1)
         day1 = today - timedelta(days=1)
         day2 = today - timedelta(days=0)
 
@@ -59,18 +61,12 @@ def main():
         if mime == 'html' and ctype == 'text/html':
             m = html2text.html2text(pay)
 
-         #print ("\nbefore:\n ", m)    
+        #print ("\nbefore:\n ", m)    
 
         m = re.sub("On .*? wrote:", "", m, re.MULTILINE | re.DOTALL)
-        m = re.sub("\s*send alert to:", "send alert to:", m, re.MULTILINE | re.DOTALL)
-
-        #m = re.sub(" *= *", " ", m)
-        #m = re.sub("\n\n", "\n", m)
-       
-       # m = re.sub("=C2=A0", " \n", m)
-       # m = re.sub("=20", " ", m)
+        m = re.sub("\s*" + SEND_ALERT_TO, SEND_ALERT_TO, m, re.MULTILINE | re.DOTALL)
         
-        # print ("\nafter:\n ", m)
+        #print ("\nafter:\n ", m)
 
         return m
 
@@ -189,7 +185,7 @@ def main():
         sender = alert['from']
         receiver = ''
 
-        regex = re.compile(r"send alert to:\s*([^\s]*)", re.MULTILINE | re.DOTALL)
+        regex = re.compile(r"%s[\s\W]*([^\s]*)" % SEND_ALERT_TO, re.MULTILINE | re.DOTALL)
         matches = regex.search(contents)
         if matches:
             receiver = matches.group(1).strip()
