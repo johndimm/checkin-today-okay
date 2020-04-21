@@ -21,9 +21,9 @@ def main():
     FROM_EMAIL    = "checkintodayokay@gmail.com"
     FROM_PWD      =  os.environ.get('password')
 
-    dateFormat = "%d-%b-%Y"
-
+    DATE_FORMAT = "%d-%b-%Y"
     SEND_ALERT_TO = 'send alert to:'
+    DATE_OFFSET = 0
 
     def local_date(utc_time):
             return utc_time.astimezone(tzlocal.get_localzone()).date()
@@ -32,11 +32,11 @@ def main():
         #
         #  day1 is yesterday, day 2 is today 
         #
-        today = date.today() + timedelta(days=0)
+        today = date.today() + timedelta(days=DATE_OFFSET)
         day1 = today - timedelta(days=1)
         day2 = today - timedelta(days=0)
 
-        d1 = day1.strftime(dateFormat)
+        d1 = day1.strftime(DATE_FORMAT)
         print ("d1:%s, day1:%s, day2:%s" % (d1, day1 ,day2))
         return (day1, day2, '(SINCE "%s")' % d1)
 
@@ -106,7 +106,14 @@ def main():
 
         #print ("contents after ------\n%s\n------- " % contents)
 
-        return contents
+        receiver = ''
+        regex = re.compile(r"%s[\s\W]*([^\s]*\s*)" % SEND_ALERT_TO, re.MULTILINE | re.DOTALL)
+        matches = regex.search(contents)
+        if matches:
+            receiver = matches.group(1).strip()
+            contents = re.sub(regex, '', contents)
+
+        return (receiver, contents)
 
     def getMessages(filter):
         messages = []
@@ -134,9 +141,9 @@ def main():
             utc_time = parse(_date)
             edate = local_date(utc_time)
 
-            econtents = getEmailContents(msg) 
+            (receiver, econtents) = getEmailContents(msg) 
 
-            message = {'from': efrom, 'date': edate, 'contents': econtents}
+            message = {'from': efrom, 'receiver': receiver, 'date': edate, 'contents': econtents}
             #print ("message:", message)
             messages.append(message)         
 
@@ -150,9 +157,9 @@ def main():
         for m in messages:
             efrom = m['from']
             if m['date'] == day1:
-                day1Messages[efrom] = m['contents']
+                day1Messages[efrom] = m
             if m['date'] == day2:
-                day2Messages[efrom] = ''
+                day2Messages[efrom] = null
         print ("day1: %s, day2: %s" % (
             len(day1Messages), 
             len(day2Messages)
@@ -166,9 +173,9 @@ def main():
         alerts = []
         
         #for sender, message in day1Messages.iteritems():    #python 2.7
-        for sender, message in day1Messages.items():         #python 3
+        for sender, m in day1Messages.items():         #python 3
             if not (sender in day2Messages):
-                alerts.append({"from": sender, "contents": message})
+                alerts.append({"from": sender, "receiver": m['receiver'], "contents": m['contents']})
 
         return alerts
 
@@ -177,23 +184,23 @@ def main():
         return "%s:%s %s:%s:%s" % (now.month, now.day, now.hour, now.minute, now.second)
 
     def sendReminders(day1Messages):
-        for sender, message in day1Messages.items():
-            sendMessage(sender, message, 'Reminder to Check-in Today Okay (%s)' % nowTime())
+        for sender, m in day1Messages.items():
+            body = "send alert to: %s\n\n%s" % (m['receiver'], m['contents'])
+            
+
+            sendMessage(sender, body, 'Reminder to Check-in Today Okay (%s)' % nowTime())
 
     def sendAlert(alert):
         contents = alert['contents']
         sender = alert['from']
-        receiver = ''
+        receiver = alert['receiver']
 
-        regex = re.compile(r"%s[\s\W]*([^\s]*)" % SEND_ALERT_TO, re.MULTILINE | re.DOTALL)
-        matches = regex.search(contents)
-        if matches:
-            receiver = matches.group(1).strip()
+        body = "%s %s\n\n%s" % (SEND_ALERT_TO, receiver, contents)
 
-        sendMessage(receiver, contents, 'ALERT! from Check-in Today Okay about %s (%s)' % (sender, nowTime()))
+        sendMessage(receiver, body, 'ALERT! from Check-in Today Okay about %s (%s)' % (sender, nowTime()))
 
     def sendMessage(receiver, contents, subject):
-        print ("sending message to: %s, subject: %s" % (receiver, subject))
+        print ("%s %s, subject: %s" % (SEND_ALERT_TO, receiver, subject))
 
         PORT = 465  # For SSL
         SMTP_SERVER = "smtp.gmail.com"
@@ -203,6 +210,9 @@ Subject: %s
 
 %s
 """ % (SENDER_EMAIL, subject, contents)
+
+        #print (message)
+        #return 
 
         server = smtplib.SMTP_SSL(SMTP_SERVER, PORT)
         server.login(FROM_EMAIL, FROM_PWD)
