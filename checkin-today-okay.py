@@ -13,6 +13,8 @@ import os
 from pytz import timezone
 import tzlocal
 
+import quotequail
+
 #import io
 
 def main():
@@ -21,9 +23,10 @@ def main():
     FROM_EMAIL    = "checkintodayokay@gmail.com"
     FROM_PWD      =  os.environ.get('password')
 
-    DATE_FORMAT = "%d-%b-%Y"
+    DATE_FORMAT   = "%d-%b-%Y"
     SEND_ALERT_TO = 'send alert to:'
-    DATE_OFFSET = 0
+    DATE_OFFSET   = 0
+    DO_SEND       = True
 
     def local_date(utc_time):
             return utc_time.astimezone(tzlocal.get_localzone()).date()
@@ -55,18 +58,11 @@ def main():
         pay = p.decode()
 
         m = ''
-        if mime == 'plain' and ctype == 'text/plain':
+        if mime == 'text/plain' and ctype == mime:
            m = pay
 
-        if mime == 'html' and ctype == 'text/html':
+        if mime == 'text/html' and ctype == mime:
             m = html2text.html2text(pay)
-
-        #print ("\nbefore:\n ", m)    
-
-        m = re.sub("On .*? wrote:", "", m, re.MULTILINE | re.DOTALL)
-        m = re.sub("\s*" + SEND_ALERT_TO, SEND_ALERT_TO, m, re.MULTILINE | re.DOTALL)
-        
-        #print ("\nafter:\n ", m)
 
         return m
 
@@ -75,36 +71,31 @@ def main():
         html = ''
         if msg.is_multipart():
            for payload in msg.get_payload():
-               plain += clean(payload, 'plain')
-               html += clean(payload, 'html')
+               plain += clean(payload, 'text/plain')
+               html += clean(payload, 'text/html')
 
         else:
-            plain += clean(msg, 'plain')
-            html += clean(msg, 'html')
+            plain += clean(msg, 'text/plain')
+            html += clean(msg, 'text/html')
 
         contents = ''
-        if len(plain) == 0:
+        if len(html) > 0:
             contents = html
         else:
             contents = plain    
 
-        #print ("contents before =====\n%s\n=========== " % contents)
 
-        #
-        # Extract the quoted email from this email.
-        # Contents is the whole enail if it's not a reply.
-        #
-        quotedLines = re.findall(r"^>.*", contents, re.MULTILINE)
-        if len(quotedLines) > 0:
-            a = []
-            for line in quotedLines:
-                cleaned = re.sub(r" ?^>? {0,2}", '', line, re.MULTILINE)
-                #print ("cleaned:", cleaned)
-                a.append(cleaned)
-            contents = "\n".join(a)
-            contents = contents.strip()
+        quoted = quotequail.quote(contents)
+        for line in quoted:
+            if not line[0]:
+                contents = line[1]
+                break
+            else:
+                contents = line[1]
 
-        #print ("contents after ------\n%s\n------- " % contents)
+        contents = re.sub("\n\n", "\n", contents, re.MULTILINE)
+        contents = re.sub("\s+$", "", contents, re.MULTILINE | re.DOTALL)
+        contents = re.sub("^\s+", "", contents, re.MULTILINE | re.DOTALL)
 
         receiver = ''
         regex = re.compile(r"%s[\s\W]*([^\s]*\s*)" % SEND_ALERT_TO, re.MULTILINE | re.DOTALL)
@@ -214,9 +205,12 @@ Subject: %s
         #print (message)
         #return 
 
-        server = smtplib.SMTP_SSL(SMTP_SERVER, PORT)
-        server.login(FROM_EMAIL, FROM_PWD)
-        server.sendmail(FROM_EMAIL, receiver, message.encode("utf8"))    
+        if DO_SEND:
+            server = smtplib.SMTP_SSL(SMTP_SERVER, PORT)
+            server.login(FROM_EMAIL, FROM_PWD)
+            server.sendmail(FROM_EMAIL, receiver, message.encode("utf8"))    
+        else:
+            print ("message: ", message)
 #
 # Read email, send reminders, send alerts.
 #
