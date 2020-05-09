@@ -84,6 +84,7 @@ def main():
         else:
             contents = plain    
 
+        #print ("contents: ", contents)
 
         quoted = quotequail.quote(contents)
         for line in quoted:
@@ -98,11 +99,15 @@ def main():
         contents = re.sub("^\s+", "", contents, re.MULTILINE | re.DOTALL)
 
         receiver = ''
-        regex = re.compile(r"%s[\s\W]*([^\s]*\s*)" % SEND_ALERT_TO, re.MULTILINE | re.DOTALL)
+        regex = re.compile(r"%s[\s\W]*([^\s\)\]]*)[\s\]]*" % SEND_ALERT_TO, re.MULTILINE | re.DOTALL)
         matches = regex.search(contents)
         if matches:
             receiver = matches.group(1).strip()
             contents = re.sub(regex, '', contents)
+            contents = re.sub(r"\(mailto:[^\)]*[\)\]]*", '', contents)
+
+#        print ("contents after: ", contents)
+        print ("receiver: ", receiver)
 
         return (receiver, contents)
 
