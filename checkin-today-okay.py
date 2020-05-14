@@ -94,9 +94,9 @@ def main():
             else:
                 contents = line[1]
 
-        #print ("contents before: ", contents)
+        # print ("contents before: ", contents)
 
-        contents = re.sub("^( *> *)*", "", contents) 
+        contents = re.sub("^( *> *)*", "", contents, flags=re.M) 
         contents = re.sub("\n\n", "\n", contents, re.MULTILINE)
         contents = re.sub("\s+$", "", contents, re.MULTILINE | re.DOTALL)
         contents = re.sub("^\s+", "", contents, re.MULTILINE | re.DOTALL)
@@ -109,7 +109,7 @@ def main():
             contents = re.sub(regex, '', contents)
             contents = re.sub(r"\(mailto:[^\)]*[\)\]]*", '', contents)
 
-        #print ("contents after: ", contents)
+        # print ("contents after: ", contents)
         print ("receiver: ", receiver)
 
         return (receiver, contents)
